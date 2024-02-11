@@ -1,3 +1,4 @@
+```mermaid
 sequenceDiagram
   participant browser
   participant server
@@ -8,3 +9,4 @@ sequenceDiagram
   deactivate server
 
   Note right of browser: The browser adds to global notes variable and calls redrawNotes() to update the UI
+  ```
