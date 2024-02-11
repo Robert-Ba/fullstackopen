@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>My test form</title>
+  </head>
+  <body>
+    <form action="/" method="post">
+      <ul style="list-style: none;">
+        <li>
+          <label>Name:</label>
+          <input id="name" type="text" name="user_name" required/>
+        </li>
+        <li>
+          <label for="mail">Email:</label>
+          <input type="email" id="mail" name="user_email" value="test@email.com"/>
+        </li>
+        <li>
+          <label for="message">Message:</label>
+          <textarea id="message" name="user_message"></textarea>
+        </li>
+        <li>
+          <button type="submit">Submit</button>
+        </li>
+      </ul>
+    </form>
+  </body>
+</html>
