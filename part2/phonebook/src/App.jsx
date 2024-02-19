@@ -7,7 +7,9 @@ import Persons from './components/Persons'
 /**
  * This component will:
  * - List person names and their phone number
- * - Provide a form to add a new person and phone number.
+ * - Provide a form to add/update a new person and phone number.
+ * - Delete records from the phonebook
+ * - Filter list of phonebook records
  * @component
  */
 const App = () => {
