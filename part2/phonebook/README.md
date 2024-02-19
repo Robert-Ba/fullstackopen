@@ -22,4 +22,7 @@ Notes:
 - Confirm before delete or update
 
 ## React + Vite
-To start use: ```npm run dev```
+Start with: ```npm run dev```
+
+## JSON Server
+Start with: ```npm run server```
