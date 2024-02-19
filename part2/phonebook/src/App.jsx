@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
+import personService from './services/persons'
 import PersonForm from './components/PersonForm'
 import Filter from './components/Filter'
 import Persons from './components/Persons'
@@ -18,9 +18,13 @@ const App = () => {
 
   // Get persons from json-server
   useEffect(() => {
-    axios
-      .get('http://localhost:3001/persons')
-      .then((res) => setPersons(res.data))
+    personService
+      .getAll()
+      .then(res => setPersons(res))
+      .catch(err => {
+        console.error(err)
+        alert("Error: Could not update person.")
+      })
   }, [])
 
   // Filter persons using regex.
@@ -31,14 +35,59 @@ const App = () => {
 
   const handleSubmitName = (e) => {
     e.preventDefault()
+    const newPerson = {
+      name: newName,
+      number: newPhone
+    }
 
     // Check for duplicate
-    if(persons.find(person => person.name.toLowerCase() === newName.toLowerCase())) {
-      window.alert(`${newName} is already added to the phonebook.`)
+    const existingPersonIndex = persons.findIndex(person => person.name.toLowerCase() === newName.toLowerCase())
+    if(existingPersonIndex >= 0) {
+      if(confirm(`${newName} is already added to the phonebook, do you want to replace the old number with a new one?`)) {
+        personService
+          .update({
+            ...newPerson,
+            id: persons[existingPersonIndex].id
+          })
+          .then((res) => {
+            const personsUpd = [...persons]
+            personsUpd[existingPersonIndex] = res
+            setPersons(personsUpd)
+            setNewPhone('')
+            setNewName('')
+          })
+          .catch((err) => {
+            console.error(err)
+            alert("Error: Could not update person.")
+          })
+      }
     } else {
-      setPersons(persons.concat({name: newName, number: newPhone}))
-      setNewPhone('')
-      setNewName('')
+      personService
+        .create(newPerson)
+        .then(res => {
+          setPersons(persons.concat(res))
+          setNewPhone('')
+          setNewName('')
+        })
+        .catch(err => {
+          console.error(err)
+          alert("Error: Could not save new person to the database.")
+        })
+    }
+  }
+
+  // Remove person from database
+  const handleDeletePerson = (person) => {
+    if(confirm(`Do you want to delete ${person.name}?`)) {
+      personService
+        .deletePerson(person.id)
+        .then(res => {
+          setPersons(persons.toSpliced((persons.findIndex(p => p.id === res.id)), 1))
+        })
+        .catch(err => {
+          console.error(err)
+          alert("Error: Could not delete person.")
+        })
     }
   }
 
@@ -60,7 +109,7 @@ const App = () => {
       />
 
       <h2>Numbers</h2>
-      <Persons personsFiltered={personsFiltered} />
+      <Persons personsFiltered={personsFiltered} handleDeletePerson={handleDeletePerson} />
     </div>
   )
 }
