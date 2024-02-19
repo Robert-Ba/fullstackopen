@@ -4,6 +4,8 @@ import PersonForm from './components/PersonForm'
 import Filter from './components/Filter'
 import Persons from './components/Persons'
 
+import Notification from './components/Notification'
+
 /**
  * This component will:
  * - List person names and their phone number
@@ -17,6 +19,9 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newPhone, setNewPhone] = useState('')
   const [nameFilter, setFilter] = useState('')
+
+  const [successMessage, setSuccessMessage] = useState()
+  const [errorMessage, setErrorMessage] = useState()
 
   // Get persons from json-server
   useEffect(() => {
@@ -57,10 +62,11 @@ const App = () => {
             setPersons(personsUpd)
             setNewPhone('')
             setNewName('')
+            showSuccessNotification(`Number changed for ${newPerson.name}`)
           })
           .catch((err) => {
             console.error(err)
-            alert("Error: Could not update person.")
+            showErrorNotification(`Unable not change number for ${newPerson.name}`)
           })
       }
     } else {
@@ -70,10 +76,11 @@ const App = () => {
           setPersons(persons.concat(res))
           setNewPhone('')
           setNewName('')
+          showSuccessNotification(`Added ${newPerson.name}`)
         })
         .catch(err => {
           console.error(err)
-          alert("Error: Could not save new person to the database.")
+          showErrorNotification(`Unable not save person ${newPerson.name}`)
         })
     }
   }
@@ -85,17 +92,36 @@ const App = () => {
         .deletePerson(person.id)
         .then(res => {
           setPersons(persons.toSpliced((persons.findIndex(p => p.id === res.id)), 1))
+          showSuccessNotification(`Deleted ${person.name}`)
         })
         .catch(err => {
           console.error(err)
-          alert("Error: Could not delete person.")
+          showErrorNotification(`Information for ${person.name} has already been removed.`)
+          setPersons(persons.toSpliced((persons.findIndex(p => p.id === person.id)), 1))
         })
     }
+  }
+
+  const showErrorNotification = (message) => {
+    setErrorMessage(message)
+    setTimeout(() => {
+      setErrorMessage(null)
+      setSuccessMessage(null)
+    }, 5000)
+  }
+
+  const showSuccessNotification = (message) => {
+    setSuccessMessage(message)
+    setTimeout(() => {
+      setErrorMessage(null)
+      setSuccessMessage(null)
+    }, 5000)
   }
 
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification successMessage={successMessage} errorMessage={errorMessage} />
       <Filter 
         setFilter={setFilter}
         nameFilter={nameFilter}
